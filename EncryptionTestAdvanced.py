@@ -189,14 +189,33 @@ class CustomEncryptedClient(AsyncClient):
         # the device @alice is sending from.
         # We'll leave that as an excercise for the reader.
         try:
-            await self.room_send(
-                room_id=ROOM_ID,
+            path = os.path.dirname(os.path.abspath(__file__))
+            path = os.path.join(path, "Morty_Smith1.jpg")
+            a, n = await self.upload(
+                lambda *_ : path, "image/jpg", "Morty_Smith1.jpg"
+            )
+            print(a.content_uri)
+            # thumbObj = await client.thumbnail("https://alice.pdxinfosec.org",a.content_uri,width=500,height=500, method=ResizingMethod.crop)
+            # tubmb_uri = thumbObj.transport_response.real_url
+            # tubmb_uri = str(tubmb_uri)
+            # print(tubmb_uri)
+            b = await self.room_send(
+                room_id="!pmoszSetEtIHfZScMY:alice.pdxinfosec.org",
                 message_type="m.room.message",
-                content = {
-                    "msgtype": "m.text",
-                    "body": "Hello Bob, this message is encrypted"
+                content={
+                    "msgtype": "m.image",
+                    "body": "Morty_Smith1.jpg",
+                    "url" : a.content_uri
                 }
             )
+            # `await self.room_send(
+            #     room_id=ROOM_ID,
+            #     message_type="m.room.message",
+            #     content = {
+            #         "msgtype": "m.text",
+            #         "body": "Hello Bob, this message is encrypted"
+            #     }
+            # )`
         except exceptions.OlmUnverifiedDeviceError as err:
             print("These are all known devices:")
             device_store: crypto.DeviceStore = self.device_store
@@ -278,7 +297,25 @@ async def main():
     # store every time we sync, thereby preventing reading old, previously read
     # events on each new sync.
     # For more info, check out https://matrix-nio.readthedocs.io/en/latest/nio.html#asyncclient
-    config = ClientConfig(store_sync_tokens=True)
+    config = ClientConfig(store_sync_tokens=True) # path = os.path.dirname(os.path.abspath(__file__))
+    # path = os.path.join(path, "Morty_Smith.jpg")
+    # a, n = await client.upload(
+    #     lambda *_ : path, "image/jpg", "Morty_Smith.jpg"
+    # )
+    # print(a.content_uri)
+    # # thumbObj = await client.thumbnail("https://alice.pdxinfosec.org",a.content_uri,width=500,height=500, method=ResizingMethod.crop)
+    # # tubmb_uri = thumbObj.transport_response.real_url
+    # # tubmb_uri = str(tubmb_uri)
+    # # print(tubmb_uri)
+    # b = await client.room_send(
+    #     room_id="!pmoszSetEtIHfZScMY:alice.pdxinfosec.org",
+    #     message_type="m.room.message",
+    #     content={
+    #         "msgtype": "m.image",
+    #         "body": "Morty_Smith.jpg",
+    #         "url" : a.content_uri
+    #     }
+    # )
     client = CustomEncryptedClient(
         ALICE_HOMESERVER,
         ALICE_USER_ID,
