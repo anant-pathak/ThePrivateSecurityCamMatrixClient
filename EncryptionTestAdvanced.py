@@ -209,6 +209,7 @@ class CustomEncryptedClient(AsyncClient):
                     "url" : a.content_uri
                 }
             )
+            sys.exit(1)
             #print(sys.argv[1])
             ###
                 #IF YOU ONLY NEED TO SEND A TEXT MESSAGE, USE THE BELOW CODE.
@@ -289,12 +290,15 @@ async def run_client(client: CustomEncryptedClient, imagePath) -> None:
     # We use full_state=True here to pull any room invites that occured or
     # messages sent in rooms _before_ this program connected to the
     # Matrix server
+    ###
+        # Uncomment the line below and in asyncio.gather, if you want to have your code run forever.
+    ###
     sync_forever_task = asyncio.ensure_future(client.sync_forever(30000, full_state=True))
 
     await asyncio.gather(
         # The order here IS significant! You have to register the task to trust
         # devices FIRST since it awaits the first sync
-        after_first_sync_task,
+        after_first_sync_task ,
         sync_forever_task
     )
 
