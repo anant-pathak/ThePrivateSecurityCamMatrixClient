@@ -183,16 +183,17 @@ class CustomEncryptedClient(AsyncClient):
             encrypted_symbol = "⚠️ "
         print(f"{room.display_name} |{encrypted_symbol}| {room.user_name(event.sender)}: {event.body}")
 
-    async def send_hello_world(self):
+    async def send_hello_world(self, imagePath):
         # Now we send an encrypted message that @bob can read, although it will
         # appear to be "unverified" when they see it, because @bob has not verified
         # the device @alice is sending from.
         # We'll leave that as an excercise for the reader.
         try:
-            path = os.path.dirname(os.path.abspath(__file__))
-            path = os.path.join(path, "Morty_Smith1.jpg")
+            ### Since complete image path is being given, that's the understanding so below 2 lines of code isn't required.
+            # path = os.path.dirname(os.path.abspath(__file__))
+            # path = os.path.join(path, imagePath) #"Morty_Smith1.jpg"
             a, n = await self.upload(
-                lambda *_ : path, "image/jpg", "Morty_Smith1.jpg"
+                lambda *_ : imagePath, "image/jpg", "Motion_image.jpg"              #"Morty_Smith1.jpg"
             )
             print(a.content_uri)
             # thumbObj = await client.thumbnail("https://alice.pdxinfosec.org",a.content_uri,width=500,height=500, method=ResizingMethod.crop)
@@ -204,19 +205,24 @@ class CustomEncryptedClient(AsyncClient):
                 message_type="m.room.message",
                 content={
                     "msgtype": "m.image",
-                    "body": "Morty_Smith1.jpg",
+                    "body": "Motion_image.jpg",
                     "url" : a.content_uri
                 }
             )
-            # `await self.room_send(
+            #print(sys.argv[1])
+            ###
+                #IF YOU ONLY NEED TO SEND A TEXT MESSAGE, USE THE BELOW CODE.
+            ###
+            # await self.room_send(
             #     room_id=ROOM_ID,
             #     message_type="m.room.message",
             #     content = {
             #         "msgtype": "m.text",
             #         "body": "Hello Bob, this message is encrypted"
             #     }
-            # )`
+            # )
         except exceptions.OlmUnverifiedDeviceError as err:
+            print("Could be a problem with the image path")
             print("These are all known devices:")
             device_store: crypto.DeviceStore = self.device_store
             [print(f"\t{device.user_id}\t {device.device_id}\t {device.trust_state}\t  {device.display_name}") for device in self.device_store]
@@ -238,7 +244,7 @@ class CustomEncryptedClient(AsyncClient):
             }, f)
 
 
-async def run_client(client: CustomEncryptedClient) -> None:
+async def run_client(client: CustomEncryptedClient, imagePath) -> None:
     """A basic encrypted chat application using nio.
     """
 
@@ -269,7 +275,7 @@ async def run_client(client: CustomEncryptedClient) -> None:
         # @alice as you play with the script
         client.trust_devices(ALICE_USER_ID)
 
-        await client.send_hello_world()
+        await client.send_hello_world(imagePath)
 
     # We're creating Tasks here so that you could potentially write other
     # Python coroutines to do other work, like checking an API or using another
@@ -292,7 +298,7 @@ async def run_client(client: CustomEncryptedClient) -> None:
         sync_forever_task
     )
 
-async def main():
+async def main(imagePath):
     # By setting `store_sync_tokens` to true, we'll save sync tokens to our
     # store every time we sync, thereby preventing reading old, previously read
     # events on each new sync.
@@ -326,7 +332,7 @@ async def main():
     # proxy="http://localhost:8080",
 
     try:
-        await run_client(client)
+        await run_client(client, imagePath)
     except (asyncio.CancelledError, KeyboardInterrupt):
         await client.close()
 
@@ -336,7 +342,7 @@ async def main():
 if __name__ == "__main__":
     try:
         asyncio.run(
-            main()
+            main(sys.argv[1])
         )
     except KeyboardInterrupt:
         pass
