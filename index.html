@@ -48,7 +48,8 @@
         <h3>Setting up synapse on the Linux Homeserver:</h3>
         Also, my guide on setting up Synapse is based off on the following other wonderful guides: <br>
         https://upcloud.com/community/tutorials/install-matrix-synapse/ <br>
-        https://github.com/matrix-org/synapse/blob/master/INSTALL.md
+        https://github.com/matrix-org/synapse/blob/master/INSTALL.md <br>
+        https://www.natrius.eu/dokuwiki/doku.php?id=digital:server:matrixsynapse 
         
         <ul>
             <li>
@@ -128,7 +129,15 @@ sudo certbot renew --dry-run
                 
             </li>
             <li>At this point you can check your Homeserver to be live and running, type in the browser: https://camera.anantserver.org</li>
-            <li></li>
+            <li>Now is the time to register the first person on Earth as a user of your Homeserver. You can make that user an admin when prompted.
+                <pre>
+                    <code>
+sudo register_new_matrix_user -c homeserver.yaml http://localhost:8008
+                    </code>
+                </pre>
+
+            </li>
+
             <li></li>
             <li></li>
         </ul>
