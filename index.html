@@ -1,1 +1,80 @@
-<h1>Hello World!</h1>
+<!DOCTYPE html>
+<head>
+
+</head>
+<body>
+    <p></p>
+    <main>
+        <h1>Project: The Private Security Raspberry Pi Cam</h1>
+        <p>When it comes to security cameras, there is a dearth of open source platforms that are hardware agnostic & can vouch for an end-to-end security from the point an image is captured by the camera till the point it travel through a communication channel to get uploaded to the cloud where only a set of authorized users can view or process it.</p>
+        <p>That's where the "The Private Security Camera" comes in. It will be a lightweight solution, which can run even on a Raspberry Pi with an attached camera. It will be ideal for situations where we want the camera to only capture an image when it detects a motion(instead of uploading 1000hrs of video feed) and notify its authorized user via a secure 
+            communication channel about its discovery.</p>
+        <h2>Technical goal</h2>
+        <p>The goal of this project is to develop software for a camera that can safely upload onto the cloud encrypted images that the Raspberry pi camera captures when it detects a motion in front.
+            The cloud in this case would be our own secure "Matrix" home server, which hosts a chat room whose members are our authorized humans or ML bots.
+        </p>
+        <p>Technical ingredients:</p>
+        <ul>
+            <li>Google cloud VM to host Matrix homeserver.</li>
+            <li>Raspberry Pi with a Pi Camera to detect motion</li>
+            <li>Custom Matrix based client on the Pi to send images as Encrypted messages onto the HomeServer.</li>
+            <li>Off the shelf Matrix based client like Riot to receive messages from RaspberryPi.</li>
+        </ul>
+        <h2>Why MATRIX?</h2>
+        <p>
+        Matrix is a relatively new communication/messaging system built on the principles of GIT. In essence there'd be no 
+        single server which will host and store all messages. Instead every client involved in the chat can have their own server also called as the HomeServer. 
+        And everyone's Homeserver involved in that chat will have a Backup of those messages. You can find out more about it on:
+        <a href="https://matrix.org">www.matrix.org</a> 
+        </p>
+        <p>In order to implement Matrix on the server we'd use its official server implementation called as <a href="https://matrix.org/docs/guides/installing-synapse">Synapse</a>.</p>
+        <h3>Setting up Google Cloud VM:</h3>
+        <p>Although I won't go into too much details about GCVM, but will give some top level parameters that I set and the librariess I installed during the setup.</p>
+        <ul>
+            <li>Go to https://console.cloud.google.com </li>
+            <li>Create your free/trial account, I used my student account. On the top left'd be a Hamburger menu -> Compute Engine -> VM Instances -> Create Instances. </li>
+            <li>Give any name -> Your nearest regon for low latency -> MachineType: g1-small (1 vCPU, 1.7 GB memory); Series: N1 -> BootDisk: Debian Linux 10 -> Allow Http/Https Traffic -> Done. </li>
+            <li>Right next to your VM Instance would be "SSH" button, click there and it'd open up your Linux via SSH on a terminal window. Not as fancy as a MAC/Windows but learn to live with it.</li>
+            <li>sudo apt update</li>
+            <li>sudo apt upgrade</li>
+            <li>sudo reboot</li>
+            <li>sudo apt install build-essential gdb python3-pycryptodome python3-pytest</li>
+            <li>sudo apt install gcc-multilib libc6-dev-i386</li>
+            <li>sudo apt install python3-pip</li>
+        </ul>
+        <h3>Setting up synapse on the Linux Homeserver:</h3>
+        Also, my guide on setting up Synapse is based off on the following other wonderful guides: <br>
+        https://upcloud.com/community/tutorials/install-matrix-synapse/ <br>
+        https://github.com/matrix-org/synapse/blob/master/INSTALL.md
+        
+        <ul>
+            <li>
+                <pre>
+                    <code>
+mkdir synapse
+cd synapse
+python3 -m venv .venv 
+source .venv/bin/activate
+python3 -m pip install --upgrade pip
+python3 -m pip install --upgrade setuptools
+python3 -m pip install matrix-synapse
+                    </code>
+                    </pre> 
+            </li>
+            <li>How to upgrade the Matrix-Synapse installation at a later stage?
+                <pre>
+                    <code>
+python3 -m pip install --upgrade matrix-synapse
+                    </code>
+                </pre>
+            </li>
+            <li></li>
+            <li></li>
+            <li></li>
+            <li></li>
+            <li></li>
+        </ul>
+        <h3>Setting up Motion library on RaspberryPi:</h3>
+        <h3>Setting up your Matrix nio client along with Encryption:</h3>
+    </main>
+</body>
