@@ -41,6 +41,9 @@
             <li>sudo apt install build-essential gdb python3-pycryptodome python3-pytest</li>
             <li>sudo apt install gcc-multilib libc6-dev-i386</li>
             <li>sudo apt install python3-pip</li>
+            <li>sudo apt-get install build-essential python3-dev libffi-dev \ <br>
+                python3-pip python3-setuptools sqlite3 \ <br>
+                libssl-dev virtualenv libjpeg-dev libxslt1-dev</li>
         </ul>
         <h3>Setting up synapse on the Linux Homeserver:</h3>
         Also, my guide on setting up Synapse is based off on the following other wonderful guides: <br>
@@ -68,8 +71,63 @@ python3 -m pip install --upgrade matrix-synapse
                     </code>
                 </pre>
             </li>
-            <li></li>
-            <li></li>
+            <li>Let's create a configuration file, also called as the "homeserver.yaml" in your ~/synapse directory, which you created in the previous step.
+                <pre>
+                    <code>
+cd ~/synapse
+python -m synapse.app.homeserver \
+    --server-name my.domain.name \
+    --config-path homeserver.yaml \
+    --generate-config \
+    --report-stats=[yes|no]
+
+E.g. 
+
+python -m synapse.app.homeserver \
+    --server-name camera.anantserver.org \
+    --config-path homeserver.yaml \
+    --generate-config \
+    --report-stats=yes
+                    </code>
+                </pre>
+            </li>
+            <li>
+                In order to make your homeserver: https://camera.anantserver.org https enabled you'd need to generate a TLS certificate. Since I was on Debian I used a tool called as Certbot Client which helped me in that, for other Linux versions look <a href="https://upcloud.com/community/tutorials/install-matrix-synapse/">here</a>
+                <pre>
+                    <code>
+sudo apt-get install certbot python-certbot-nginx
+sudo certbot certonly --nginx -d camera.anantserver.org
+                    </code>
+                </pre>
+                You need to provide some info during this step, following which you will get an info on the Certificate location and how can you update it post its expiry. You should safely copy the output somewhere, the output would look asomething like:
+                <br><br>
+                <pre>
+IMPORTANT NOTES:
+- Congratulations! Your certificate and chain have been saved at: 
+    /etc/letsencrypt/live/camera.anantserver.org/fullchain.pem
+    Your key file has been saved at:
+    /etc/letsencrypt/live/camera.anantserver.org/privkey.pem
+    Your cert will expire on 2020-07-07. To obtain a new or tweaked
+    version of this certificate in the future, simply run certbot
+    again. To non-interactively renew *all* of your certificates, run
+    "certbot renew"
+- Your account credentials have been saved in your Certbot
+    configuration directory at /etc/letsencrypt. You should make a
+    secure backup of this folder now. This configuration directory will
+    also contain certificates and private keys obtained by Certbot so
+    making regular backups of this folder is ideal.
+- If you like Certbot, please consider supporting our work by:
+
+    Donating to ISRG / Let's Encrypt:   https://letsencrypt.org/donate
+    Donating to EFF:                    https://eff.org/donate-le
+                </pre>
+                <br><br>To test if certbot renew works and removing the dry run part would also renew the certificate: 
+                <pre>
+sudo certbot renew --dry-run
+                </pre>
+                
+            </li>
+            <li>At this point you can check your Homeserver to be live and running, type in the browser: https://camera.anantserver.org</li>
             <li></li>
             <li></li>
             <li></li>
