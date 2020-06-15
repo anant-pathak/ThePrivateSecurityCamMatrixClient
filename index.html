@@ -137,12 +137,125 @@ sudo register_new_matrix_user -c homeserver.yaml http://localhost:8008
                 </pre>
 
             </li>
+            <li>You can go to <a href="https://riot.im/app/#/login">Riot.im </a> and enter the url of your homeserver and username, password of the user you just created. <br>
+                Up till this point whatever we have done can be used to communicate securely among our friends using the Riot client and our homeserver.
 
-            <li></li>
-            <li></li>
+            </li> 
+            <li>
+                <h3>Databases in Matrix: </h3> <br>
+                I feel its better to migrate to PostgreSql as your database than MySql which is the default one. When installing PostgreSql, I faced an error installing "psycopg2" which is a Python package required by Matrix for the code to talk to PSQL database. <br>
+                I faced an error during the installation of PostgreSql. How I resolved it? <br>
+                <pre>
+Install psycopg2: 
+I faced an error while running the command: 
+python3 -m pip install matrix-synapse[postgres]
+
+The error was due to it not being able to install psycopg2 in debian. 
+TO resolve it, install libpq-dev , of which psycopg2 is a wrapper. 
+sudo apt install libpq-dev python3-dev
+Then: python3 -m pip install psycopg2
+Then again run the command: 
+python3 -m pip install matrix-synapse[postgres]
+
+Then install:
+>   sudo apt install postgresql 
+>   sudo -u postgres bash
+Create a username and password:
+>   postgres@alice:/home/pathak/synapse$ 
+>   createuser --pwprompt synapse_user
+>   Password: ******
+Create your database, the name is Synapse.
+>   CREATE DATABASE synapse
+    ENCODING 'UTF8'
+    LC_COLLATE='C'
+    LC_CTYPE='C'
+    template=template0
+    OWNER synapse_user;
+Open up the configuration file homeserver.yaml in ~/synapse:  
+>   Under database: 
+	
+    name: psycopg2
+    args:
+        user: "synapse_user"
+        password: "*******"
+        database: "synapse"
+        host: "127.0.0.1"
+        cp_min: 5
+        cp_max: 10
+<h4>Databases:</h4> 
+How to fireup psql:
+>   sudo -u postgres psql synapse synapse_user -W -h localhost 
+    Password:  ******* 
+Use psql commands like:
+>   \dt  for displaying all database tables
+>   SELECT * FROM users; 
+>   SELECT * FROM rooms; // to view all rooms and their ids
+Deleting a user or a field: 
+>   DELETE FROM users WHERE name LIKE '@bob:%';   //If a user bob has already been created before.  BUT if you delete the user this way, next time creating the same user would throw an error by Synapse. 
+
+            </pre>
+
+            </li>
         </ul>
         <h3>Setting up Motion library on RaspberryPi:</h3>
-        <h3>Setting up your Matrix nio client along with Encryption:</h3>
+        Now that our HomeServer is all set and we have registered a user. Now is the time to make our raspberry pi with a cam detect motion. <br>
+        That's where <a href="https://motion-project.github.io/motion_build.html">"MOTION PROJECT"</a> comes in, it's an open source library and quite popular. 
+        I believe I installed it on my Pi as a package rather than from source. Command used was: <br><br>
+        <code>>  sudo apt-get install motion</code> <br> 
+        <pre>
+<h3>Where is the conf file?</h3>
+On raspberryPi Motion has motion.conf in etc/motion.
+
+>   Turn off stream_localhost, in order to view the stream externally using ip:8081 in a web browser.
+
+
+<h4>How to start motion? </h4>
+>   Command line: sudo motion -n  //Where -n is to run it in non demon mode.
+>   To stop it: Ctrl^c 
+
+Important configurations to look for when detecting motion: 
+Width: 320 -> 640
+Height: 240 -> 480
+framerate: Default =2; Maximum number of frames to be captured from the camera per second. I changed to 24
+lightswitch_percent : To set in order to avoid FALSE motion detection when light is turned on in a room.
+minimum_motion_frames: How many frames should change in a row for Motion to set it as "MotionDetection".
+
+
+Relevant resources:
+
+https://motion-project.github.io/motion_guide.html
+
+https://unix.stackexchange.com/questions/401287/motion-is-taking-an-image-every-second-even-though-it-is-setup-not-to
+
+https://www.unix.com/60599-post3.html
+
+https://www.hackster.io/robin-cole/motion-activated-image-capture-and-classification-of-birds-6ef1ce
+
+https://www.home-assistant.io/
+
+        </pre>
+        <h3>Setting up your <a href="https://github.com/poljar/matrix-nio">Matrix nio</a> client along with Encryption:</h3>
+        This I felt was one of the most chalenging parts in making an end-end communication system between the Pi and Riot client. <br>
+        Its a pretty advanced and capable client side library for Matrix. We'd also want our messages to be Encrypted before they go out of Pi to the Server and Chat room on Riot.
+        Since OLM library's installion is a prerequisite for matrix-nio[e2e]. And installing OLM on a Mac or Linux is very tricky, but I was able to figure out some ways to install it.<br><br>
+        How does Encryption work in general in Matrix and Nio? <br>
+        What is double rachet: https://signal.org/docs/specifications/doubleratchet/ 
+
+
+	Ø Natrix encrypt messages to devices rather than to users. e.g. if the device gets stolen then the device can be blacklisted and whoever has the stolen device wouldn't be able to see new messages. 
+	Ø How many keys are involved? 
+		Device keys. : Every device has a unique decryption keys. That key is not same for a user. A user will have as many decrypt keys as the number of devices he/she has. 
+		○ Decryption keys: A client composes a message for a destination chat room-> A new random key is generated for that message -> Encrypted message sent to server -> All devices associated with the chat room are sent "THE" decryption key encrypted with a device's encryption key. -> The device will decrypt the "message decryption key" using the unique decryption key provided to each device. -> Finally when the encrypted message arrives device will use the message decryption key to decrypt that message. 
+	Ø Note that when you log out and log in again, your new session is considered a new device from Riot's perspective.
+	Ø  How to view all your sessions and devices being used + deviceIDS: 
+		○ Login to Riot website.
+		○ Profile setting -> security -> You can see all the sessions and info. 
+
+        
+        <br> <h3> Installing OLM on MAC: </h3>
+
+
+
     </main>
 </body>
 
