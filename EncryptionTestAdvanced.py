@@ -56,12 +56,12 @@ BOB_DEVICE_IDS = [
 
 # the ID of the room you want your bot to join and send commands in.
 # This can be a direct message or room; Matrix treats them the same
-ROOM_ID = "!pmoszSetEtIHfZScMY:alice.pdxinfosec.org"
+ROOM_ID = "!*******:alice.pdxinfosec.org"
 # ROOM_ID = "!kifpxjVYatUcoVRMkB:denhoff.ca"
 
-ALICE_USER_ID = "@anant:alice.pdxinfosec.org"
+ALICE_USER_ID = "@pi:alice.pdxinfosec.org"
 ALICE_HOMESERVER = "https://alice.pdxinfosec.org"
-ALICE_PASSWORD = "anant"
+ALICE_PASSWORD = "*******"
 
 # ALICE_USER_ID = "@olive:denhoff.ca"
 # ALICE_HOMESERVER = "https://matrix.denhoff.ca"
