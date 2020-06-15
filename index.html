@@ -239,23 +239,48 @@ https://www.home-assistant.io/
         Its a pretty advanced and capable client side library for Matrix. We'd also want our messages to be Encrypted before they go out of Pi to the Server and Chat room on Riot.
         Since OLM library's installion is a prerequisite for matrix-nio[e2e]. And installing OLM on a Mac or Linux is very tricky, but I was able to figure out some ways to install it.<br><br>
         How does Encryption work in general in Matrix and Nio? <br>
-        What is double rachet: https://signal.org/docs/specifications/doubleratchet/ 
-
-
-	Ø Natrix encrypt messages to devices rather than to users. e.g. if the device gets stolen then the device can be blacklisted and whoever has the stolen device wouldn't be able to see new messages. 
-	Ø How many keys are involved? 
-		Device keys. : Every device has a unique decryption keys. That key is not same for a user. A user will have as many decrypt keys as the number of devices he/she has. 
-		○ Decryption keys: A client composes a message for a destination chat room-> A new random key is generated for that message -> Encrypted message sent to server -> All devices associated with the chat room are sent "THE" decryption key encrypted with a device's encryption key. -> The device will decrypt the "message decryption key" using the unique decryption key provided to each device. -> Finally when the encrypted message arrives device will use the message decryption key to decrypt that message. 
-	Ø Note that when you log out and log in again, your new session is considered a new device from Riot's perspective.
-	Ø  How to view all your sessions and devices being used + deviceIDS: 
-		○ Login to Riot website.
-		○ Profile setting -> security -> You can see all the sessions and info. 
+        Matrix uses Double Rachet in Matrix. What is double rachet: <a href="https://signal.org/docs/specifications/doubleratchet/">https://signal.org/docs/specifications/doubleratchet/ </a><br>
+        Natrix encrypt messages to devices rather than to users. e.g. if the device gets stolen then the device can be blacklisted and whoever has the stolen device wouldn't be able to see new messages. <br> 
+	    How many keys are involved? <br>
+		Device keys : Every device has a unique decryption keys. That key is not same for a user. A user will have as many decrypt keys as the number of devices he/she have. <br>
+		1)  Decryption keys: A client composes a message for a destination chat room <br>2) A new random key is generated for that message. <br>3)  Encrypted message sent to server. <br>4) All devices associated with the chat room are sent "THE" decryption key encrypted with a device's encryption key. <br>5)   The device will decrypt the "message decryption key" using the unique decryption key provided to each device.<br>6) Finally when the encrypted message arrives device will use the message decryption key to decrypt that message. <br><br>
+	    Note that when you log out and log in again, your new session is considered a new device from Riot's perspective.<br><br>
+	    How to view all your sessions and devices being used + deviceIDS: <br>
+		>   Login to Riot website. <br>
+		>   Profile setting -> security -> You can see all the sessions and info. <br>
 
         
-        <br> <h3> Installing OLM on MAC: </h3>
+        <br> <h3> Installing OLM on MAC: </h3><br>
+        Have brew installed on your Mac. <br>
+        <code>brew install libolm</code><br><br>
+        <br> <h3> Installing OLM on Linux/Raspberry Pi: </h3><br>
+        <pre>
+        <code>
+If the warning says: libfii not installed during "make olm-python3", use: <br> 
+1)  sudo apt-get install libffi6 libffi-dev
+2)  git clone https://gitlab.matrix.org/matrix-org/olm.git
+3)  cd olm
+4)  make
+5)  sudo make install
+6)  sudo ldconfig
+7)  cd python
+8)  sudo python3 setup.py install
 
+<h4>Installing matrix-nio[e2e]</h4>
 
-
+Go to your project and install matrix-nio[e2e] using:
+pip install matrix-nio[e2e]
+    
+    </code>
+    </pre>
+    Now that the Matrix-nio[e2e] is installed, we can write the actual code that encrypts our Text/Images. <br>
+    Few of the functionalities we'd want in our Pi client code are: <br>
+    Let's name the client user as "pi" from here on. 
+    1) When you log in for the first time as Pi, you receive a device_id and access_token, we want to store it on disk. <br>
+    Because on every fresh login of the same user Pi you receive a new device id. And on Riot client on the web, we have to authenticate every session of the user Pi. So it's better we authenticate the RaspberryPi session just once from Riot client by going into the chat room settings.<br>  
+    2) Fetch the stored device_id and access_token from the disk, before sending messages. 
+    3) Trusting all the device ids(remember a user can have multiple device ids) that are present in the chat room and those which should be able to download the message or images.<br>
+    4)  
     </main>
 </body>
 
